@@ -3,7 +3,8 @@ from mock import patch, Mock
 from pluct import schema
 
 
-class SchemaTestCase(TestCase):
+class SchemaClassTestCase(TestCase):
+
     @patch("requests.get")
     def setUp(self, get):
         self.data = {
@@ -64,3 +65,16 @@ class SchemaTestCase(TestCase):
     def test_required_should_not_be_setted_by_default(self):
         s = schema.Schema(url="")
         self.assertFalse(hasattr(s, "required"))
+
+    def test_raw_schema_delegates_getitem(self):
+        s = schema.Schema(url='', raw_schema={"some_key": "some_value"})
+        self.assertTrue(s["some_key"], "some_value")
+
+    @patch("requests.get")
+    def test_get_with_valid_auth_creates_Authorization_header(self, mock_get):
+        schema.get('', auth={'type': 't', 'credentials': 'c'})
+        expected_headers = {
+            'content-type': 'application/json',
+            'Authorization': 't c'
+        }
+        mock_get.called_with(expected_headers)

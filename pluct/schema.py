@@ -57,4 +57,3 @@ def from_header(headers, auth=None):
     schema_url = p.findall(headers.get('content-type', ''))
     if schema_url:
         return get(schema_url[0], auth)
-    return None
